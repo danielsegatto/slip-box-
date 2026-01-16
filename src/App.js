@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Hash, Trash2, ArrowUpRight } from 'lucide-react';
+import { Plus, Search, Trash2, ArrowUpRight } from 'lucide-react';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
