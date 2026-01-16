@@ -1,14 +1,24 @@
 import React from 'react';
 import { Trash2, ArrowUpRight } from 'lucide-react';
 
-const NoteItem = ({ note, deleteNote }) => (
-  <article className="group relative">
+// 'onSelect' to the props to handle clicking a note
+const NoteItem = ({ note, deleteNote, onSelect }) => (
+  <article 
+    // cursor-pointer and the onClick trigger to enter Focus Mode
+    className="group relative cursor-pointer" 
+    onClick={onSelect}
+  >
     <div className="flex justify-between items-start mb-2">
       <span className="text-[10px] text-gray-300 font-mono">
         {new Date(note.timestamp).toLocaleDateString()}
       </span>
       <button 
-        onClick={() => deleteNote(note.id)}
+        onClick={(e) => {
+          // // e.stopPropagation(). 
+          // // It prevents the note from "opening" when you only want to delete it.
+          e.stopPropagation(); 
+          deleteNote(note.id);
+        }}
         className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
       >
         <Trash2 size={14} />
