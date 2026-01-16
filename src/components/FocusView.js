@@ -31,7 +31,7 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
           onClick={onBack}
           className="mb-16 text-[10px] uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
         >
-          ← Back
+          ←
         </button>
         
         <div className="flex flex-col gap-16">
@@ -39,7 +39,7 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
           {/* ANTERIOR SECTION */}
           <div className="space-y-4">
              <ConnectionStack 
-              title="Anterior (Source)" 
+              title="" 
               linkedNotes={getLinkedNotes('anterior')} 
               onSelectNote={onSelectNote}
             />
@@ -48,7 +48,7 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
               onClick={() => setLinkingType('anterior')}
               className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gray-300 hover:text-black transition-colors"
             >
-              <Plus size={12} /> Add Source
+              <Plus size={12} />
             </button>
           </div>
 
@@ -65,10 +65,10 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
               onClick={() => setLinkingType('posterior')}
               className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gray-300 hover:text-black transition-colors"
             >
-              <Plus size={12} /> Add Extension
+              <Plus size={12} /> 
             </button>
             <ConnectionStack 
-              title="Posterior (Extension)" 
+              title="" 
               linkedNotes={getLinkedNotes('posterior')} 
               onSelectNote={onSelectNote}
             />
