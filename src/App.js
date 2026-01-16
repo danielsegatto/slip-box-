@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import SearchBar from './components/SearchBar';
 import ImpulseCapture from './components/ImpulseCapture';
 import NoteItem from './components/NoteItem';
-import FocusView from './components/FocusView'; // // NEW IMPORT
+import FocusView from './components/FocusView';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -19,8 +19,6 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('slip-box-atoms', JSON.stringify(notes));
   }, [notes]);
-
-  // // ... Logic (extractTags, addNote, deleteNote) remains exactly the same
 
   const extractTags = (text) => {
     const regex = /#(\w+)/g;
@@ -44,6 +42,35 @@ const App = () => {
 
   const deleteNote = (id) => setNotes(notes.filter(n => n.id !== id));
 
+  // // NEW: The Logic of Connection (The Synapse)
+  const addLink = (targetId, type) => {
+    setNotes(prevNotes => prevNotes.map(note => {
+      // 1. Add link to the currently selected note
+      if (note.id === selectedNoteId) {
+        return {
+          ...note,
+          links: {
+            ...note.links,
+            // Use Set to prevent duplicate links
+            [type]: [...new Set([...note.links[type], targetId])]
+          }
+        };
+      }
+      // 2. Add the INVERSE link to the target note
+      if (note.id === targetId) {
+        const inverseType = type === 'anterior' ? 'posterior' : 'anterior';
+        return {
+          ...note,
+          links: {
+            ...note.links,
+            [inverseType]: [...new Set([...note.links[inverseType], selectedNoteId])]
+          }
+        };
+      }
+      return note;
+    }));
+  };
+
   const filteredNotes = notes.filter(n => 
     n.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
     n.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -51,7 +78,6 @@ const App = () => {
 
   const selectedNote = notes.find(n => n.id === selectedNoteId);
 
-  // // NEW: Helper to find note objects for the connection stacks
   const getLinkedNotes = (type) => {
     if (!selectedNote) return [];
     return selectedNote.links[type]
@@ -83,12 +109,15 @@ const App = () => {
           </main>
         </>
       ) : (
-        /* // CHANGED: Now using the new dedicated FocusView component */
         <FocusView 
           selectedNote={selectedNote}
+          // // NEW: Pass the full list of notes so we can search them
+          allNotes={notes}
           getLinkedNotes={getLinkedNotes}
           onBack={() => setSelectedNoteId(null)}
           onSelectNote={(id) => setSelectedNoteId(id)}
+          // // NEW: Pass the link function
+          onAddLink={addLink}
         />
       )}
     </div>
