@@ -5,10 +5,7 @@ const ConnectionStack = ({ title, linkedNotes, onSelectNote }) => {
   if (linkedNotes.length === 0) return null;
 
   return (
-    <section className="space-y-4 opacity-40 hover:opacity-100 transition-opacity duration-500">
-      <h3 className="text-[10px] uppercase tracking-widest text-gray-300 font-medium">
-        {title}
-      </h3>
+    <section className="">
       <div className="flex flex-col gap-4">
         {linkedNotes.map(note => (
           <div 
