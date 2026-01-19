@@ -6,7 +6,7 @@ const ImpulseCapture = ({ input, setInput, addNote, textareaRef }) => (
     <textarea
       ref={textareaRef}
       placeholder="..."
-      className="w-full bg-transparent border-gray-100 p-2 focus:ring-0 text-xl md:text-2xl resize-none min-h-[120px] placeholder:text-gray-200 leading-relaxed"
+      className="w-full bg-transparent border-gray-200 p-2 text-xl md:text-2xl resize-none min-h-[120px] placeholder:text-gray-200 leading-relaxed"
       value={input}
       onChange={(e) => setInput(e.target.value)}
       onKeyDown={(e) => {
