@@ -13,4 +13,4 @@ This project is guided by five core pillars:
 - Minimalism as Mental Space: Every unnecessary UI element is a distraction. The interface is a quiet, empty room where only the current thought exists.
 
 
-[Slip-Box WEB](https://danielsegatto.github.io/slip-box-/)
+[Slip-Box WEB](https://danielsegatto.github.io/slip-box/)
