@@ -11,10 +11,10 @@ const ConnectionStack = ({ title, linkedNotes, onSelectNote }) => {
           <div 
             key={note.id} 
             onClick={() => onSelectNote(note.id)}
-            className="cursor-pointer text-sm border-l border-gray-200 pl-4 py-2 hover:border-black transition-all"
+            className="cursor-pointer text-sm border-l border-gray-200 pl-4 py-2"
           >
             {/* Display a preview of the content */}
-            <p className="text-gray-500 hover:text-black line-clamp-2">
+            <p className="text-gray-500 line-clamp-2">
               {note.content}
             </p>
           </div>
