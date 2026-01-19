@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2, ArrowUpRight } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 // 'onSelect' to the props to handle clicking a note
 const NoteItem = ({ note, deleteNote, onSelect }) => (
@@ -19,7 +19,7 @@ const NoteItem = ({ note, deleteNote, onSelect }) => (
           e.stopPropagation(); 
           deleteNote(note.id);
         }}
-        className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+        className="opacity-0 p-1 text-red-500 transition-opacity"
       >
         <Trash2 size={14} />
       </button>
@@ -32,18 +32,12 @@ const NoteItem = ({ note, deleteNote, onSelect }) => (
     {note.tags.length > 0 && (
       <div className="flex gap-2 mt-4">
         {note.tags.map(tag => (
-          <span key={tag} className="text-[10px] font-medium px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">
+          <span key={tag} className="text-[10px] font-medium py-0.5 bg-gray-100 text-gray-500 rounded-full">
             #{tag}
           </span>
         ))}
       </div>
     )}
-    
-    <div className="mt-6 pt-4 border-t border-transparent group-hover:border-gray-50 flex justify-end">
-       <button className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-gray-300 hover:text-black transition-colors">
-         Connect <ArrowUpRight size={12} />
-       </button>
-    </div>
   </article>
 );
 
