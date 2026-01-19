@@ -42,21 +42,20 @@ const App = () => {
 
   const deleteNote = (id) => setNotes(notes.filter(n => n.id !== id));
 
-  // // NEW: The Logic of Connection (The Synapse)
+  // The Synapse: Manages bidirectional linking
   const addLink = (targetId, type) => {
     setNotes(prevNotes => prevNotes.map(note => {
-      // 1. Add link to the currently selected note
+      // 1. Link current -> target
       if (note.id === selectedNoteId) {
         return {
           ...note,
           links: {
             ...note.links,
-            // Use Set to prevent duplicate links
             [type]: [...new Set([...note.links[type], targetId])]
           }
         };
       }
-      // 2. Add the INVERSE link to the target note
+      // 2. Link target -> current (inverse)
       if (note.id === targetId) {
         const inverseType = type === 'anterior' ? 'posterior' : 'anterior';
         return {
@@ -111,12 +110,10 @@ const App = () => {
       ) : (
         <FocusView 
           selectedNote={selectedNote}
-          // // NEW: Pass the full list of notes so we can search them
           allNotes={notes}
           getLinkedNotes={getLinkedNotes}
           onBack={() => setSelectedNoteId(null)}
           onSelectNote={(id) => setSelectedNoteId(id)}
-          // // NEW: Pass the link function
           onAddLink={addLink}
         />
       )}
