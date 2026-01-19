@@ -34,7 +34,7 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
         {/* Navigation: Text-less Back Button */}
         <button 
           onClick={onBack}
-          className="fixed top-8 left-6 md:left-auto md:relative md:top-auto md:mb-16 p-2 rounded-full"
+          className="fixed top-8 left-6 md:left-auto md:relative md:top-auto md:mb-8 p-2 rounded-full"
         >
           <ArrowLeft size={20} />
         </button>
@@ -59,7 +59,7 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
 
           {/* CURRENT NOTE (The Anchor) */}
           <article className="max-w-prose py-4 border-y border-transparent">
-             <p className="text-2xl md:text-4xl leading-relaxed text-[#1a1a1a] font-light">
+             <p className="text-xl md:text-2xl text-center leading-relaxed text-[#1a1a1a] font-light">
                {selectedNote.content}
              </p>
           </article>
