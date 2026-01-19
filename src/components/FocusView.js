@@ -59,7 +59,7 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
 
           {/* CURRENT NOTE (The Anchor) */}
           <article className="max-w-prose py-4 border-y border-transparent">
-             <p className="text-xl md:text-2xl text-center leading-relaxed text-[#1a1a1a] font-light">
+             <p className="text-xl md:text-2xl leading-relaxed text-[#1a1a1a] font-light">
                {selectedNote.content}
              </p>
           </article>
