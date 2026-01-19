@@ -32,7 +32,7 @@ const NoteItem = ({ note, deleteNote, onSelect }) => (
     {note.tags.length > 0 && (
       <div className="flex gap-2 mt-4">
         {note.tags.map(tag => (
-          <span key={tag} className="text-[10px] font-medium py-0.5 bg-gray-100 text-gray-500 rounded-full">
+          <span key={tag} className="text-[10px] font-medium py-0.5 text-gray-500 rounded-full">
             #{tag}
           </span>
         ))}
