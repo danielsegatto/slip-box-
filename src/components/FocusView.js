@@ -30,7 +30,7 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
         />
       )}
 
-      <main className="max-w-2xl mx-auto px-2 py-6">
+      <main className="max-w-2xl mx-auto px-2 py-2">
         {/* Navigation: Text-less Back Button */}
         <button 
           onClick={onBack}
