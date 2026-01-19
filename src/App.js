@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SearchBar from './components/SearchBar';
 import ImpulseCapture from './components/ImpulseCapture';
-import NoteItem from './components/NoteItem';
+import NoteList from './components/NoteList';
 import FocusView from './components/FocusView';
 
 const App = () => {
@@ -11,6 +11,7 @@ const App = () => {
   const [selectedNoteId, setSelectedNoteId] = useState(null); 
   const textareaRef = useRef(null);
 
+  // Sync with LocalStorage
   useEffect(() => {
     const saved = localStorage.getItem('slip-box-atoms');
     if (saved) setNotes(JSON.parse(saved));
@@ -90,21 +91,18 @@ const App = () => {
         <>
           <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <main className="max-w-2xl mx-auto px-6 pb-24">
-            <ImpulseCapture input={input} setInput={setInput} addNote={addNote} textareaRef={textareaRef} />
-            <div className="space-y-16">
-              {filteredNotes.length === 0 ? (
-                <div className="text-center py-20 text-gray-300 italic">The slip-box is quiet.</div>
-              ) : (
-                filteredNotes.map((note) => (
-                  <NoteItem 
-                    key={note.id} 
-                    note={note} 
-                    deleteNote={deleteNote} 
-                    onSelect={() => setSelectedNoteId(note.id)} 
-                  />
-                ))
-              )}
-            </div>
+            <ImpulseCapture 
+              input={input} 
+              setInput={setInput} 
+              addNote={addNote} 
+              textareaRef={textareaRef} 
+            />
+            {/* Using the decomposed NoteList component */}
+            <NoteList 
+              notes={filteredNotes} 
+              onDelete={deleteNote} 
+              onSelect={setSelectedNoteId} 
+            />
           </main>
         </>
       ) : (
