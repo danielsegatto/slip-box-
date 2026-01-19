@@ -1,10 +1,9 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
+import TagList from './TagList';
 
-// 'onSelect' to the props to handle clicking a note
-const NoteItem = ({ note, deleteNote, onSelect }) => (
+const NoteItem = ({ note, deleteNote, onSelect, onTagClick }) => (
   <article 
-    // cursor-pointer and the onClick trigger to enter Focus Mode
     className="group relative cursor-pointer" 
     onClick={onSelect}
   >
@@ -14,8 +13,6 @@ const NoteItem = ({ note, deleteNote, onSelect }) => (
       </span>
       <button 
         onClick={(e) => {
-          // // e.stopPropagation(). 
-          // // It prevents the note from "opening" when you only want to delete it.
           e.stopPropagation(); 
           deleteNote(note.id);
         }}
@@ -25,19 +22,11 @@ const NoteItem = ({ note, deleteNote, onSelect }) => (
       </button>
     </div>
     
-    <p className="text-lg leading-relaxed text-[#333] whitespace-pre-wrap">
+    <p className="text-lg leading-relaxed text-[#333] whitespace-pre-wrap line-clamp-4">
       {note.content}
     </p>
 
-    {note.tags.length > 0 && (
-      <div className="flex gap-2 mt-4">
-        {note.tags.map(tag => (
-          <span key={tag} className="text-[10px] font-medium py-0.5 text-gray-500 rounded-full">
-            #{tag}
-          </span>
-        ))}
-      </div>
-    )}
+    <TagList tags={note.tags} onTagClick={onTagClick} />
   </article>
 );
 
