@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Map } from 'lucide-react';
+import { ArrowLeft, Plus, Map } from 'lucide-react'; 
 import ConnectionStack from './ConnectionStack';
 import LinkSelector from './LinkSelector';
 
@@ -33,26 +33,23 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
       <main className="max-w-2xl mx-auto px-2 py-2">
         <div className="flex justify-between items-center mb-2">
             <button 
-            onClick={onBack}
-            className="left-auto relative top-auto mb-2 p-2 rounded-full"
+                onClick={onBack}
+                className="p-2 rounded-full"
             >
-            <ArrowLeft size={20} className="text-gray-600" />
+                <ArrowLeft size={20} className="text-gray-600" />
             </button>
             
-            {/* NEW: Zoom Out / Map Button */}
             <button
                 onClick={onOpenMap}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-full"
                 title="View in Map"
             >
-                <Map size={20} className="text-gray-400 hover:text-black transition-colors" />
+                <Map size={20} className="text-gray-400" />
             </button>
         </div>
         
-        {/* ... Rest of the component (ConnectionStacks and Article) remains the same ... */}
         <div className="flex flex-col gap-2 relative">
-          
-          {/* ANTERIOR SECTION (Source) */}
+                    {/* ANTERIOR SECTION (Source) */}
           <div className="flex flex-col">
             <ConnectionStack 
               title="Anterior" 
@@ -66,14 +63,12 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
               <Plus size={24} />
             </button>
           </div>
-
           {/* CURRENT NOTE (The Anchor) */}
           <article className="max-w-prose py-4 border-y border-transparent">
              <p className="text-xl md:text-2xl leading-relaxed text-[#1a1a1a] font-light">
                {selectedNote.content}
              </p>
           </article>
-
           {/* POSTERIOR SECTION (Extension) */}
           <div className="flex flex-col">
             <button 

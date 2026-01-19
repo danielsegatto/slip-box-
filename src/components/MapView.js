@@ -6,7 +6,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   const svgRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
 
-  // Initialize Simulation Data
+  // Initialize Data
   useEffect(() => {
     const initialNodes = notes.map(note => ({
       ...note,
@@ -18,21 +18,21 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
     setNodes(initialNodes);
   }, [notes, dimensions]);
 
-  // The Physics Engine (The "Organic" Movement)
+  // Physics Engine
   useEffect(() => {
     let animationFrameId;
 
     const runSimulation = () => {
       setNodes(prevNodes => {
-        const newNodes = prevNodes.map(node => ({ ...node })); // Deep copy for mutability in calc
+        const newNodes = prevNodes.map(node => ({ ...node })); 
 
-        // 1. Repulsion (Nodes push apart)
+        // 1. Repulsion
         for (let i = 0; i < newNodes.length; i++) {
           for (let j = i + 1; j < newNodes.length; j++) {
             const dx = newNodes[j].x - newNodes[i].x;
             const dy = newNodes[j].y - newNodes[i].y;
             const distance = Math.sqrt(dx * dx + dy * dy) || 1;
-            const force = 5000 / (distance * distance); // Repulsion strength
+            const force = 5000 / (distance * distance); 
             
             const fx = (dx / distance) * force;
             const fy = (dy / distance) * force;
@@ -44,9 +44,8 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
           }
         }
 
-        // 2. Attraction (Links pull together)
+        // 2. Attraction
         newNodes.forEach(node => {
-            // Check anterior links
             if (node.links.anterior) {
                 node.links.anterior.forEach(targetId => {
                     const target = newNodes.find(n => n.id === targetId);
@@ -54,7 +53,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                         const dx = target.x - node.x;
                         const dy = target.y - node.y;
                         const distance = Math.sqrt(dx * dx + dy * dy) || 1;
-                        const force = (distance - 150) * 0.005; // Spring constant
+                        const force = (distance - 150) * 0.005;
 
                         const fx = (dx / distance) * force;
                         const fy = (dy / distance) * force;
@@ -68,17 +67,16 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
             }
         });
 
-        // 3. Center Gravity (Keep them on screen)
+        // 3. Center Gravity
         const centerX = dimensions.width / 2;
         const centerY = dimensions.height / 2;
         newNodes.forEach(node => {
           node.vx += (centerX - node.x) * 0.0005;
           node.vy += (centerY - node.y) * 0.0005;
-          
           // Apply Velocity & Friction
           node.x += node.vx;
           node.y += node.vy;
-          node.vx *= 0.9; // Friction
+          node.vx *= 0.9;
           node.vy *= 0.9;
         });
 
@@ -100,10 +98,10 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#fafafa] animate-in fade-in duration-300">
-      {/* Controls */}
+    // Removed: animate-in, fade-in, duration-300
+    <div className="fixed inset-0 z-50 bg-[#fafafa]">
       <div className="absolute top-4 right-4 flex gap-2 z-50">
-        <button onClick={onClose} className="p-2 bg-white shadow-sm rounded-full hover:bg-gray-50 transition-colors">
+        <button onClick={onClose} className="p-2 bg-white shadow-sm rounded-full">
           <X size={24} className="text-gray-500" />
         </button>
       </div>
@@ -139,7 +137,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
               key={node.id} 
               transform={`translate(${node.x},${node.y})`}
               onClick={() => onSelectNote(node.id)}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
+              className="cursor-pointer"
             >
               <circle 
                 r={isActive ? 8 : 5} 
