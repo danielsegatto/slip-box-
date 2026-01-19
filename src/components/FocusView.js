@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Map } from 'lucide-react';
 import ConnectionStack from './ConnectionStack';
 import LinkSelector from './LinkSelector';
 
-const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNote, onAddLink }) => {
+const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNote, onAddLink, onOpenMap }) => {
   const [linkingType, setLinkingType] = useState(null); // 'anterior' | 'posterior' | null
 
   // SMART FILTERING LOGIC:
@@ -31,14 +31,25 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
       )}
 
       <main className="max-w-2xl mx-auto px-2 py-2">
-        {/* Navigation: Text-less Back Button */}
-        <button 
-          onClick={onBack}
-          className="left-auto relative top-auto mb-2 p-2 rounded-full"
-        >
-          <ArrowLeft size={20} />
-        </button>
+        <div className="flex justify-between items-center mb-2">
+            <button 
+            onClick={onBack}
+            className="left-auto relative top-auto mb-2 p-2 rounded-full"
+            >
+            <ArrowLeft size={20} className="text-gray-600" />
+            </button>
+            
+            {/* NEW: Zoom Out / Map Button */}
+            <button
+                onClick={onOpenMap}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                title="View in Map"
+            >
+                <Map size={20} className="text-gray-400 hover:text-black transition-colors" />
+            </button>
+        </div>
         
+        {/* ... Rest of the component (ConnectionStacks and Article) remains the same ... */}
         <div className="flex flex-col gap-2 relative">
           
           {/* ANTERIOR SECTION (Source) */}
@@ -48,7 +59,6 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
               linkedNotes={getLinkedNotes('anterior')} 
               onSelectNote={onSelectNote}
             />
-            {/* Abstract Control: Up Arrow for "Add Source" */}
             <button 
               onClick={() => setLinkingType('anterior')}
               className="p-2 text-gray-200"
@@ -66,7 +76,6 @@ const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNot
 
           {/* POSTERIOR SECTION (Extension) */}
           <div className="flex flex-col">
-             {/* Abstract Control: Down Arrow for "Add Extension" */}
             <button 
               onClick={() => setLinkingType('posterior')}
               className="p-2 text-gray-200"
