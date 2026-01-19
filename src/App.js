@@ -46,31 +46,18 @@ const App = () => {
   // The Synapse: Manages bidirectional linking
   const addLink = (targetId, type) => {
     setNotes(prevNotes => prevNotes.map(note => {
-      // 1. Link current -> target
       if (note.id === selectedNoteId) {
-        return {
-          ...note,
-          links: {
-            ...note.links,
-            [type]: [...new Set([...note.links[type], targetId])]
-          }
-        };
+        return { ...note, links: { ...note.links, [type]: [...new Set([...note.links[type], targetId])] } };
       }
-      // 2. Link target -> current (inverse)
       if (note.id === targetId) {
         const inverseType = type === 'anterior' ? 'posterior' : 'anterior';
-        return {
-          ...note,
-          links: {
-            ...note.links,
-            [inverseType]: [...new Set([...note.links[inverseType], selectedNoteId])]
-          }
-        };
+        return { ...note, links: { ...note.links, [inverseType]: [...new Set([...note.links[inverseType], selectedNoteId])] } };
       }
       return note;
     }));
   };
 
+  // The Discovery Logic: Filter by text OR tag
   const filteredNotes = notes.filter(n => 
     n.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
     n.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -85,6 +72,12 @@ const App = () => {
       .filter(Boolean);
   };
 
+  // "Shining a Light": Clicking a tag sets the search query
+  const handleTagClick = (tag) => {
+    setSearchQuery(tag); // Or `#${tag}` if you prefer explicit syntax
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#1a1a1a] font-sans selection:bg-black selection:text-white">
       {!selectedNoteId ? (
@@ -97,11 +90,12 @@ const App = () => {
               addNote={addNote} 
               textareaRef={textareaRef} 
             />
-            {/* Using the decomposed NoteList component */}
+            {/* Pass the tag handler down */}
             <NoteList 
               notes={filteredNotes} 
               onDelete={deleteNote} 
-              onSelect={setSelectedNoteId} 
+              onSelect={setSelectedNoteId}
+              onTagClick={handleTagClick}
             />
           </main>
         </>
