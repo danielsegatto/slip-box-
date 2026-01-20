@@ -37,7 +37,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   const pointersRef = useRef(new Map());
   const requestRef = useRef();
   const clickStartRef = useRef(0);
-  
+
   // Track previous distance between two fingers for pinch-zoom
   const prevPinchDistRef = useRef(null);
 
@@ -238,7 +238,8 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                         ))}
                     </div>
                 )}
-                <p className="text-xs text-[#1a1a1a] whitespace-pre-wrap font-mono leading-relaxed pointer-events-none">
+                {/* CHANGED: text-base (16px) and break-words for correct wrapping */}
+                <p className="text-base text-[#1a1a1a] whitespace-pre-wrap break-words font-mono leading-relaxed pointer-events-none">
                     {node.content}
                 </p>
              </div>

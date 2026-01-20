@@ -1,4 +1,5 @@
 // --- CONSTANTS ---
+// CHANGED: Increased font size for legibility
 const FONT_SIZE = 18;
 const REPULSION = 8000; 
 const SPRING_LEN = 300; 
@@ -9,13 +10,21 @@ const WANDER = 0.1;
 
 // --- HELPER: Calculate Node Size based on Text ---
 export const getDimensions = (text) => {
-  let w = 200;
-  if (text.length > 50) w = 240;
-  if (text.length > 150) w = 300;
+  // CHANGED: Wider base widths to accommodate larger text on mobile
+  let w = 220;
+  if (text.length > 50) w = 260;
+  if (text.length > 150) w = 320;
   
-  const charsPerLine = w / 7;
+  // CHANGED: Improved height estimation
+  // 16px font averages ~9px width per character. 
+  // We use a safe divisor to slightly overestimate height (preventing scroll/cutoff).
+  const charsPerLine = w / 9;
   const lines = Math.ceil(text.length / charsPerLine);
-  const h = Math.max(100, (lines * FONT_SIZE * 1.4) + 50);
+  
+  // Height = (Lines * LineHeight) + Vertical Padding + Space for Tags
+  // LineHeight is 1.6 (matches leading-relaxed)
+  const h = Math.max(120, (lines * FONT_SIZE * 1.6) + 60);
+  
   return { width: w, height: h };
 };
 
@@ -28,7 +37,7 @@ export const runPhysicsTick = (currentNodes, isSetup = false) => {
   for (let i = 0; i < nextNodes.length; i++) {
       const nodeA = nextNodes[i];
       
-      // A. Repulsion (Nodes push each other away)
+       // A. Repulsion (Nodes push each other away)
       for (let j = 0; j < nextNodes.length; j++) {
           if (i === j) continue;
           const nodeB = nextNodes[j];
