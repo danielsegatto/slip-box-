@@ -107,8 +107,8 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
     const prev = pointersRef.current.get(e.pointerId);
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    if (pointersRef.current.size === 2) {
-        // PINCH ZOOM
+    if (pointersRef.current.size === 2) {        
+      // PINCH ZOOM
         const points = [...pointersRef.current.values()];
         const dist = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
         if (prevPinchDistRef.current) {
@@ -141,7 +141,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
       onPointerCancel={handlePointerUp}
     >
       
-      {/* UI CONTROLS */}
+      {/* UI Controls */}
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-50 pointer-events-auto">
         <button onClick={onClose} className="p-2 bg-white border border-gray-200 shadow-sm rounded-full text-gray-500 hover:text-black">
           <X size={20} />
@@ -154,7 +154,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
           <Minus size={20} />
         </button>
       </div>
-
+      
       {/* TRANSFORM CONTAINER (MOVES EVERYTHING) */}
       <div 
         className="absolute top-0 left-0 w-full h-full origin-top-left will-change-transform"
@@ -163,15 +163,11 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
         }}
       >
         
-        {/* LAYER 1: SVG LINES (Background) */}
-        {/* ADDED: z-0 to explicitly push this layer to the back */}
+        {/* LAYER 0: PASSIVE LINES (Background - z-0) */}
         <svg className="absolute inset-0 overflow-visible pointer-events-none z-0">
           <defs>
             <marker id="arrow-default" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
               <path d="M0,0 L0,6 L9,3 z" fill="#e5e5e5" />
-            </marker>
-            <marker id="arrow-active" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-              <path d="M0,0 L0,6 L9,3 z" fill="#000000" />
             </marker>
           </defs>
           
@@ -179,26 +175,26 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
             node.links.anterior.map(sourceId => {
               const source = nodes.find(n => n.id === sourceId);
               if (!source) return null;
+              // Only render if NOT highlighted (Highlighted ones are drawn in Layer 20)
               const isHighlighted = highlightedId && (node.id === highlightedId || source.id === highlightedId);
-              const end = calculateIntersection(source, node);
+              if (isHighlighted) return null; 
 
+              const end = calculateIntersection(source, node);
               return (
                 <line 
-                  key={`${source.id}-${node.id}`}
+                  key={`bg-${source.id}-${node.id}`}
                   x1={source.x} y1={source.y}
                   x2={end.x} y2={end.y}
-                  stroke={isHighlighted ? "#000000" : "#e5e5e5"} 
-                  strokeWidth={isHighlighted ? "2" : "2"} 
-                  className="transition-colors duration-200"
-                  markerEnd={isHighlighted ? "url(#arrow-active)" : "url(#arrow-default)"}
+                  stroke="#e5e5e5" 
+                  strokeWidth="2" 
+                  markerEnd="url(#arrow-default)"
                 />
               );
             })
           ))}
         </svg>
 
-        {/* LAYER 2: HTML NODES (Foreground) */}
-        {/* ADDED: z-10 to explicitly stack this layer above the SVG */}
+        {/* LAYER 10: NOTE CARDS (Middle - z-10) */}
         <div className="absolute inset-0 pointer-events-none z-10">
           {nodes.map(node => (
              <div 
@@ -206,14 +202,14 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                className={`
                  absolute pointer-events-auto flex flex-col p-4 bg-white border transition-shadow duration-300
                  ${node.id === activeNoteId ? 'border-black shadow-lg z-20' : 'border-gray-300 shadow-sm z-10'}
-                 ${node.id === highlightedId ? 'ring-2 ring-black' : ''}
+                 ${node.id === highlightedId ? 'ring-2 ring-black z-30' : ''} 
                `}
                style={{
                  left: node.x,
                  top: node.y,
                  width: node.width,
                  height: node.height,
-                 transform: 'translate(-50%, -50%)' // Center div on coordinate
+                 transform: 'translate(-50%, -50%)'
                }}
                onPointerDown={(e) => {
                    e.stopPropagation();
@@ -232,7 +228,6 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                    }
                }}
              >
-                {/* Note Content */}
                 {node.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
                         {node.tags.map(t => (
@@ -246,6 +241,39 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
              </div>
           ))}
         </div>
+
+        {/* LAYER 20: ACTIVE LINES (Foreground - z-20) */}
+        {/* Renders ON TOP of the notes when valid */}
+        <svg className="absolute inset-0 overflow-visible pointer-events-none z-20">
+          <defs>
+            <marker id="arrow-active" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#000000" />
+            </marker>
+          </defs>
+          
+          {nodes.map(node => (
+            node.links.anterior.map(sourceId => {
+              const source = nodes.find(n => n.id === sourceId);
+              if (!source) return null;
+
+              // Only render if highlighted
+              const isHighlighted = highlightedId && (node.id === highlightedId || source.id === highlightedId);
+              if (!isHighlighted) return null;
+
+              const end = calculateIntersection(source, node);
+              return (
+                <line 
+                  key={`fg-${source.id}-${node.id}`}
+                  x1={source.x} y1={source.y}
+                  x2={end.x} y2={end.y}
+                  stroke="#000000" 
+                  strokeWidth="2" 
+                  markerEnd="url(#arrow-active)"
+                />
+              );
+            })
+          ))}
+        </svg>
 
       </div>
     </div>
