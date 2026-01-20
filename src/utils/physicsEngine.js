@@ -1,8 +1,8 @@
 // --- CONSTANTS ---
 // CHANGED: Increased font size for legibility
 const FONT_SIZE = 18;
-const REPULSION = 8000; 
-const SPRING_LEN = 300; 
+const REPULSION = 10000; 
+const SPRING_LEN = 400; 
 const PADDING = 50;     
 const MAX_SPEED = 3;  
 const FRICTION = 0.95;  

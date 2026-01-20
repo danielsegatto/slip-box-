@@ -164,7 +164,8 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
       >
         
         {/* LAYER 1: SVG LINES (Background) */}
-        <svg className="absolute inset-0 overflow-visible pointer-events-none">
+        {/* ADDED: z-0 to explicitly push this layer to the back */}
+        <svg className="absolute inset-0 overflow-visible pointer-events-none z-0">
           <defs>
             <marker id="arrow-default" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
               <path d="M0,0 L0,6 L9,3 z" fill="#e5e5e5" />
@@ -197,7 +198,8 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
         </svg>
 
         {/* LAYER 2: HTML NODES (Foreground) */}
-        <div className="absolute inset-0 pointer-events-none">
+        {/* ADDED: z-10 to explicitly stack this layer above the SVG */}
+        <div className="absolute inset-0 pointer-events-none z-10">
           {nodes.map(node => (
              <div 
                key={node.id}
@@ -238,7 +240,6 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                         ))}
                     </div>
                 )}
-                {/* CHANGED: text-base (16px) and break-words for correct wrapping */}
                 <p className="text-base text-[#1a1a1a] whitespace-pre-wrap break-words font-mono leading-relaxed pointer-events-none">
                     {node.content}
                 </p>
