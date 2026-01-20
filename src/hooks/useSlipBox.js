@@ -5,7 +5,7 @@ const STORAGE_KEY = 'slip-box-atoms';
 
 export const useSlipBox = () => {
   const [notes, setNotes] = useState([]);
-
+  
   // 1. Load from Memory (Mount)
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -20,7 +20,6 @@ export const useSlipBox = () => {
   // 3. Action: Create Atom
   const addNote = (content) => {
     if (!content.trim()) return;
-    
     const newNote = {
       id: Date.now().toString(),
       content: content.trim(),
@@ -28,7 +27,6 @@ export const useSlipBox = () => {
       tags: extractTags(content),
       links: { anterior: [], posterior: [] }
     };
-    
     setNotes(prev => [newNote, ...prev]);
   };
 
@@ -37,7 +35,7 @@ export const useSlipBox = () => {
     setNotes(prev => prev.filter(n => n.id !== id));
   };
 
-  // 5. Action: The Synapse (Bidirectional Linking)
+  // 5. Action: The Synapse (Connect)
   const addLink = (sourceId, targetId, type) => {
     setNotes(prevNotes => prevNotes.map(note => {
       // A. Update Source
@@ -65,10 +63,39 @@ export const useSlipBox = () => {
     }));
   };
 
+  // 6. NEW ACTION: The Severance (Disconnect)
+  const removeLink = (sourceId, targetId, type) => {
+    setNotes(prevNotes => prevNotes.map(note => {
+      // A. Remove from Source
+      if (note.id === sourceId) {
+        return { 
+          ...note, 
+          links: { 
+            ...note.links, 
+            [type]: note.links[type].filter(id => id !== targetId)
+          } 
+        };
+      }
+      // B. Remove from Target (Inverse)
+      if (note.id === targetId) {
+        const inverseType = type === 'anterior' ? 'posterior' : 'anterior';
+        return { 
+          ...note, 
+          links: { 
+            ...note.links, 
+            [inverseType]: note.links[inverseType].filter(id => id !== sourceId)
+          } 
+        };
+      }
+      return note;
+    }));
+  };
+
   return {
     notes,
     addNote,
     deleteNote,
-    addLink
+    addLink,
+    removeLink
   };
 };

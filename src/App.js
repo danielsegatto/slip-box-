@@ -8,22 +8,22 @@ import MapView from './components/views/MapView';
 
 const App = () => {
   // --- 1. THE NERVOUS SYSTEM (Logic Hook) ---
-  const { notes, addNote, deleteNote, addLink } = useSlipBox();
+  const { notes, addNote, deleteNote, addLink, removeLink } = useSlipBox();
 
   // --- 2. UI STATE ---
   const [input, setInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNoteId, setSelectedNoteId] = useState(null); 
-  const [viewMode, setViewMode] = useState('list'); 
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'focus' | 'map'
   
   const textareaRef = useRef(null);
 
-  // --- 3. EXPLICIT ROUTING ---
+  // --- 3. LOGIC & ROUTING ---
   
-  // Derived State 
+  // Smart Filtering: Handles both text search and "#tag" clicks
   const filteredNotes = notes.filter(n => {
     const query = searchQuery.toLowerCase();
-    // If the query is a tag search (starts with #), strip it for the tag comparison
+    // If the query looks like a tag (starts with #), strip the '#' for comparison
     const cleanQuery = query.startsWith('#') ? query.slice(1) : query;
 
     return (
@@ -34,6 +34,7 @@ const App = () => {
 
   const selectedNote = notes.find(n => n.id === selectedNoteId);
 
+  // Helper to gather linked note objects for the Focus View
   const getLinkedNotes = (type) => {
     if (!selectedNote) return [];
     return selectedNote.links[type]
@@ -50,7 +51,7 @@ const App = () => {
 
   const handleMapSelect = (id) => {
       setSelectedNoteId(id);
-      // DO NOT change viewMode. Stay in map.
+      // DO NOT change viewMode. Stay in map, just update the anchor.
   };
 
   const handleMapClose = () => {
@@ -65,7 +66,7 @@ const App = () => {
   };
 
   const handleTagClick = (tag) => {
-    // Prepend the '#' for visual feedback
+    // Prepend '#' for visual clarity in the search bar
     setSearchQuery(`#${tag}`); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -73,7 +74,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#1a1a1a] font-sans selection:bg-black selection:text-white relative">
       
-      {/* VIEW: MAP */}
+      {/* VIEW: MAP (The Topography) */}
       {viewMode === 'map' && (
           <MapView 
             notes={notes} 
@@ -83,7 +84,7 @@ const App = () => {
           />
       )}
 
-      {/* VIEW: GLOBAL INDEX */}
+      {/* VIEW: GLOBAL INDEX (The Lobby) */}
       {viewMode === 'list' && !selectedNoteId && (
           <GlobalIndexView 
             searchQuery={searchQuery}
@@ -99,7 +100,7 @@ const App = () => {
           />
       )}
 
-      {/* VIEW: FOCUS */}
+      {/* VIEW: FOCUS (The Thread) */}
       {viewMode === 'focus' && selectedNoteId && selectedNote && (
             <FocusView 
               selectedNote={selectedNote}
@@ -111,6 +112,7 @@ const App = () => {
               }}
               onSelectNote={(id) => setSelectedNoteId(id)} 
               onAddLink={addLink}
+              onRemoveLink={removeLink} // New: Pass disconnection logic
               onOpenMap={() => setViewMode('map')}
             />
       )}
