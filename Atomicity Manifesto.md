@@ -23,6 +23,8 @@ Anterior Connection: This represents the "Source" or "Basis." It answers: "What 
 Posterior Connection: This represents the "Extension" or "Branch." It answers: "Where does this thought lead or expand to?" It provides the path for growth.
 By explicitly defining these two directions, the app creates "Thought Trains"—logical sequences that form a coherent narrative or argument.
 
+The Pruning Right. Just as connections define value, incorrect connections create noise. The user must have the immediate, tactile ability to sever a link (anterior or posterior) to maintain the hygiene of the graph. A Slip-box grows by connection but matures by pruning.
+
 ### 3. Organic Discovery (The "Serendipity" Phase)
 
 The app should allow for "Intellectual Foraging." Exclusively through a dual-mechanism of semantic tags and structural links, the user navigates a landscape where no other organizational hierarchy exists. Tags provide the lateral, thematic groupings, while links (anterior/posterior) provide the longitudinal, sequential flow.
@@ -45,6 +47,8 @@ The Experience: It should feel like browsing a personal stream of consciousness.
 
 When an individual note is selected, the app shifts from "browsing" to "deep focus."
 
+The View is the Editor. There is no distinction between 'reading mode' and 'editing mode.' To refine a thought, the user simply touches the text and types. This encourages the constant polishing of atoms, keeping the slip-box as a living organism rather than a static archive.
+
 The Interface: The current note occupies the center of the viewport.
 
 Above (The Source): A vertical stack of "Anterior" notes, showing the logical foundations that lead to the current thought.
@@ -61,6 +65,8 @@ The Interface: An infinite canvas (the "Board") where notes appear as interconne
 
 Visual Hierarchy: The current note is the anchor. Its immediate connections are visible. As the user increases the "Level of Visualization" (zoom levels), the connections of connections are revealed, forming a complex constellation.
 
+The Map is Navigable. Selecting a node within the map shifts the gravitational anchor to that new thought without exiting the spatial view. The user can traverse the entire neural network node-by-node, effectively 'swinging' through their thoughts, and only return to the linear Focus View when they choose to land.
+
 The Experience: This is for macro-thinking and pattern recognition. It allows the user to see "islands" of thoughts that might be linked by a common tag but haven't been connected by a linear link yet. It is the visual representation of the "Secondary Brain."
 
 
@@ -74,6 +80,8 @@ Tactile Thought: Moving from an anterior note to a posterior one should feel lik
 
 The Honesty of Touch (Mobile-First Reality) Hover states are a desktop illusion; they do not exist in the hand. Visual transitions (fades, slides, glides) are cosmetic delays that mask the raw function of the tool. In a mobile-first context, interaction is binary: you touch, it acts. The interface must be immediate and solid. It should snap, not drift. The app rejects the "smoothness" of modern web design in favor of the instant responsiveness of a physical tool.
 
+Reject 'Drift,' Embrace 'Feedback.' While navigation transitions (fades, slides) are banned for slowing down cognition, micro-interactions are essential. Buttons should depress physically (scale down) when touched to confirm the action. The interface must provide tactile certainty without navigational lag.
+
 Binary Organization Rule: Never introduce folders. If the user needs to organize, they must use either a tag (for themes) or a link (for sequence).
 
 ## VIRTUAL BEHAVIORAL GUIDELINES
@@ -83,3 +91,5 @@ Prioritize Content Over Container: If faced with a design choice between a "cool
 Protect the Flow: Any feature that interrupts the writing flow must be redesigned or removed.
 
 Universal Context: The app must be equally effective for capturing a grocery list or a doctoral thesis. The true power lies in the connection.
+
+Scale over Density. In a mobile-first context, 'seeing more' is often 'seeing less clearly.' We prioritize large, legible typography and massive touch targets over fitting more notes on the screen. If the text is too small to read at arm's length, the design has failed.
