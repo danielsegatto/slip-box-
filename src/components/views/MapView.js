@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
-import { runPhysicsTick, getDimensions } from '../utils/physicsEngine'; // New Import
+import { runPhysicsTick, getDimensions } from '../../utils/physicsEngine'; // New Import
 
 const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   const [nodes, setNodes] = useState([]);

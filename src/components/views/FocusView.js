@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, Map } from 'lucide-react'; 
-import ConnectionStack from './ConnectionStack';
-import LinkSelector from './LinkSelector';
+import ConnectionStack from '../ConnectionStack';
+import LinkSelector from '../LinkSelector';
 
 const FocusView = ({ selectedNote, allNotes, getLinkedNotes, onBack, onSelectNote, onAddLink, onOpenMap }) => {
   const [linkingType, setLinkingType] = useState(null); // 'anterior' | 'posterior' | null
