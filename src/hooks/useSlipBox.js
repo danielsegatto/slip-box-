@@ -5,7 +5,7 @@ const STORAGE_KEY = 'slip-box-atoms';
 
 export const useSlipBox = () => {
   const [notes, setNotes] = useState([]);
-  
+
   // 1. Load from Memory (Mount)
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -30,12 +30,26 @@ export const useSlipBox = () => {
     setNotes(prev => [newNote, ...prev]);
   };
 
-  // 4. Action: Delete Atom
+  // 4. Action: Update Atom
+  const updateNote = (id, newContent) => {
+    setNotes(prev => prev.map(note => {
+      if (note.id === id) {
+        return {
+          ...note,
+          content: newContent,
+          tags: extractTags(newContent) // Re-calculate tags dynamically
+        };
+      }
+      return note;
+    }));
+  };
+
+  // 5. Action: Delete Atom
   const deleteNote = (id) => {
     setNotes(prev => prev.filter(n => n.id !== id));
   };
 
-  // 5. Action: The Synapse (Connect)
+  // 6. Action: The Synapse (Connect)
   const addLink = (sourceId, targetId, type) => {
     setNotes(prevNotes => prevNotes.map(note => {
       // A. Update Source
@@ -63,7 +77,7 @@ export const useSlipBox = () => {
     }));
   };
 
-  // 6. NEW ACTION: The Severance (Disconnect)
+  // 7. Action: The Severance (Disconnect)
   const removeLink = (sourceId, targetId, type) => {
     setNotes(prevNotes => prevNotes.map(note => {
       // A. Remove from Source
@@ -94,6 +108,7 @@ export const useSlipBox = () => {
   return {
     notes,
     addNote,
+    updateNote, // Export new function
     deleteNote,
     addLink,
     removeLink

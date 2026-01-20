@@ -8,7 +8,7 @@ import MapView from './components/views/MapView';
 
 const App = () => {
   // --- 1. THE NERVOUS SYSTEM (Logic Hook) ---
-  const { notes, addNote, deleteNote, addLink, removeLink } = useSlipBox();
+  const { notes, addNote, updateNote, deleteNote, addLink, removeLink } = useSlipBox();
 
   // --- 2. UI STATE ---
   const [input, setInput] = useState('');
@@ -46,7 +46,7 @@ const App = () => {
 
   const handleGlobalSelect = (id) => {
       setSelectedNoteId(id);
-      setViewMode('focus'); // Explicitly enter focus mode from list
+      setViewMode('focus'); 
   };
 
   const handleMapSelect = (id) => {
@@ -55,7 +55,7 @@ const App = () => {
   };
 
   const handleMapClose = () => {
-      // If we have a selection, go to Focus. If not, go to List.
+    // If we have a selection, go to Focus. If not, go to List.
       setViewMode(selectedNoteId ? 'focus' : 'list');
   };
 
@@ -74,7 +74,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#1a1a1a] font-sans selection:bg-black selection:text-white relative">
       
-      {/* VIEW: MAP (The Topography) */}
+      {/* VIEW: MAP */}
       {viewMode === 'map' && (
           <MapView 
             notes={notes} 
@@ -84,7 +84,7 @@ const App = () => {
           />
       )}
 
-      {/* VIEW: GLOBAL INDEX (The Lobby) */}
+      {/* VIEW: GLOBAL INDEX */}
       {viewMode === 'list' && !selectedNoteId && (
           <GlobalIndexView 
             searchQuery={searchQuery}
@@ -100,7 +100,7 @@ const App = () => {
           />
       )}
 
-      {/* VIEW: FOCUS (The Thread) */}
+      {/* VIEW: FOCUS */}
       {viewMode === 'focus' && selectedNoteId && selectedNote && (
             <FocusView 
               selectedNote={selectedNote}
@@ -111,8 +111,9 @@ const App = () => {
                   setViewMode('list');
               }}
               onSelectNote={(id) => setSelectedNoteId(id)} 
+              onUpdateNote={updateNote} // Pass the updater
               onAddLink={addLink}
-              onRemoveLink={removeLink} // New: Pass disconnection logic
+              onRemoveLink={removeLink} 
               onOpenMap={() => setViewMode('map')}
             />
       )}

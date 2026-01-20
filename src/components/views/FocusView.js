@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Plus, Map } from 'lucide-react'; 
 import ConnectionStack from '../ConnectionStack';
 import LinkSelector from '../LinkSelector';
@@ -9,36 +9,39 @@ const FocusView = ({
   getLinkedNotes, 
   onBack, 
   onSelectNote, 
+  onUpdateNote, // Receive the updater
   onAddLink, 
   onRemoveLink, 
   onOpenMap 
 }) => {
-  const [linkingType, setLinkingType] = useState(null); // 'anterior' | 'posterior' | null
+  const [linkingType, setLinkingType] = useState(null); 
+  const textareaRef = useRef(null);
 
-  // --- 1. SMART FILTERING LOGIC ---
-  // Exclude the current note itself and any notes already connected in the chosen direction.
+  // Auto-resize textarea logic
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  }, [selectedNote.content]);
+
   const linkableNotes = allNotes.filter(n => {
     if (!selectedNote) return false;
     const isSelf = n.id === selectedNote.id;
-    // Safety check: Ensure links object exists
     const currentLinks = selectedNote.links?.[linkingType] || []; 
     const isAlreadyConnected = linkingType && currentLinks.includes(n.id);
     return !isSelf && !isAlreadyConnected;
   });
 
-  // --- 2. HANDLERS ---
   const handleLinkSelection = (targetId) => {
-    // Pass selectedNote.id as the SOURCE, targetId as the TARGET
     onAddLink(selectedNote.id, targetId, linkingType); 
     setLinkingType(null);
   };
 
-  // Safety check: If no note is selected, don't render anything (or render a fallback)
   if (!selectedNote) return null;
 
   return (
     <>
-      {/* MODAL: LINK SELECTOR */}
       {linkingType && (
         <LinkSelector 
           notes={linkableNotes} 
@@ -47,10 +50,9 @@ const FocusView = ({
         />
       )}
 
-      {/* MAIN CONTENT */}
       <main className="max-w-2xl mx-auto px-2 py-2">
         
-        {/* HEADER: Navigation Controls */}
+        {/* HEADER */}
         <div className="flex justify-between items-center mb-2">
             <button 
                 onClick={onBack}
@@ -69,40 +71,40 @@ const FocusView = ({
             </button>
         </div>
         
-        {/* THE THREAD: Vertical Timeline */}
         <div className="flex flex-col gap-2 relative">
           
-          {/* SECTION: ANTERIOR (The Source/Basis) */}
+          {/* ANTERIOR */}
           <div className="flex flex-col">
             <ConnectionStack 
               title="Anterior" 
               linkedNotes={getLinkedNotes('anterior')} 
               onSelectNote={onSelectNote}
-              // Specific removal for Anterior links
               onRemove={(targetId) => onRemoveLink(selectedNote.id, targetId, 'anterior')}
             />
             <button 
               onClick={() => setLinkingType('anterior')}
               className="p-2 text-gray-200 hover:text-black transition-colors self-start"
-              title="Add Anterior Connection"
             >
               <Plus size={24} />
             </button>
           </div>
 
-          {/* SECTION: CURRENT NOTE (The Anchor) */}
+          {/* CURRENT NOTE (EDITABLE) */}
           <article className="max-w-prose py-4 border-y border-transparent">
-             <p className="text-xl md:text-2xl leading-relaxed text-[#1a1a1a] font-light">
-               {selectedNote.content}
-             </p>
+             <textarea
+               ref={textareaRef}
+               value={selectedNote.content}
+               onChange={(e) => onUpdateNote(selectedNote.id, e.target.value)}
+               className="w-full text-xl md:text-2xl leading-relaxed text-[#1a1a1a] font-light resize-none bg-transparent outline-none overflow-hidden"
+               spellCheck={false}
+             />
           </article>
 
-          {/* SECTION: POSTERIOR (The Extension/Outcome) */}
+          {/* POSTERIOR */}
           <div className="flex flex-col">
             <button 
               onClick={() => setLinkingType('posterior')}
               className="p-2 text-gray-200 hover:text-black transition-colors self-start"
-              title="Add Posterior Connection"
             >
               <Plus size={24} />
             </button>
@@ -110,7 +112,6 @@ const FocusView = ({
               title="Posterior" 
               linkedNotes={getLinkedNotes('posterior')} 
               onSelectNote={onSelectNote}
-              // Specific removal for Posterior links
               onRemove={(targetId) => onRemoveLink(selectedNote.id, targetId, 'posterior')}
             />
           </div>
