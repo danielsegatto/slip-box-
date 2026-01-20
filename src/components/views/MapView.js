@@ -37,6 +37,9 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   const pointersRef = useRef(new Map());
   const requestRef = useRef();
   const clickStartRef = useRef(0);
+  
+  // Track previous distance between two fingers for pinch-zoom
+  const prevPinchDistRef = useRef(null);
 
   // --- 1. INITIALIZATION & DATA SYNC ---
   useEffect(() => {
@@ -46,7 +49,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
     if (!anchorId) return;
     // A. BFS for visibility (Which nodes should be on the map?)
     const visited = new Set([anchorId]);
-    let currentLayer = [anchorId];
+    let currentLayer = [activeNoteId];
     for (let d = 0; d < viewDepth; d++) {
         const nextLayer = [];
         currentLayer.forEach(id => {
@@ -61,32 +64,18 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
     // B. Build/Update Node Objects (Preserve positions of existing nodes)
     setNodes(prevNodes => {
         const prevMap = new Map(prevNodes.map(n => [n.id, n]));
-        
-        let newNodes = notes
-            .filter(n => visited.has(n.id))
-            .map(n => {
-                const existing = prevMap.get(n.id);
-                const dims = getDimensions(n.content);
-                if (existing) return { ...existing, ...dims };
-                
-                return {
-                    ...n,
-                    ...dims,
-                    x: Math.random() * 20 - 10,
-                    y: Math.random() * 20 - 10,
-                    vx: 0,
-                    vy: 0
-                };
-            });
+        let newNodes = notes.filter(n => visited.has(n.id)).map(n => {
+            const existing = prevMap.get(n.id);
+            const dims = getDimensions(n.content);
+            if (existing) return { ...existing, ...dims };
+            return { ...n, ...dims, x: Math.random() * 20 - 10, y: Math.random() * 20 - 10, vx: 0, vy: 0 };
+        });
         // C. Pre-solve Layout if it's a fresh load (low node count)
         if (prevNodes.length === 0) {
-            for (let i = 0; i < 200; i++) {
-                newNodes = runPhysicsTick(newNodes, true);
-            }
+            for (let i = 0; i < 200; i++) { newNodes = runPhysicsTick(newNodes, true); }
         }
         return newNodes;
     });
-
   }, [notes, activeNoteId, viewDepth]); // Re-runs when activeNoteId changes to re-center graph
 
   // --- 2. ANIMATION LOOP ---
@@ -114,19 +103,50 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   };
 
   const handlePointerMove = (e) => {
+    // 1. Update the current pointer's position
     if (!pointersRef.current.has(e.pointerId)) return;
     const prev = pointersRef.current.get(e.pointerId);
-    setPan(p => ({
-        x: p.x + (e.clientX - prev.x),
-        y: p.y + (e.clientY - prev.y)
-    }));
+    
+    // Update the record for this pointer
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    // 2. CHECK FOR PINCH (2 fingers)
+    if (pointersRef.current.size === 2) {
+        const points = [...pointersRef.current.values()];
+        const p1 = points[0];
+        const p2 = points[1];
+        
+        // Calculate distance between fingers
+        const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+
+        if (prevPinchDistRef.current) {
+            // Compare current distance to previous frame's distance
+            const scale = dist / prevPinchDistRef.current;
+            setZoom(z => Math.min(Math.max(0.2, z * scale), 4));
+        }
+        
+        // Store for next frame
+        prevPinchDistRef.current = dist;
+    } 
+    // 3. CHECK FOR PAN (1 finger)
+    else if (pointersRef.current.size === 1) {
+        // Only pan if we aren't pinching (clears jitter)
+        prevPinchDistRef.current = null; 
+        
+        setPan(p => ({
+            x: p.x + (e.clientX - prev.x),
+            y: p.y + (e.clientY - prev.y)
+        }));
+    }
   };
 
   const handlePointerUp = (e) => {
     pointersRef.current.delete(e.pointerId);
+    // Reset pinch tracking when fingers lift
+    if (pointersRef.current.size < 2) {
+        prevPinchDistRef.current = null;
+    }
   };
-
   // --- 4. RENDER ---
   return (
     <div className="fixed inset-0 z-50 bg-[#fafafa]">
@@ -174,7 +194,6 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                     if (!source) return null;
                     
                     const isHighlighted = highlightedId && (node.id === highlightedId || source.id === highlightedId);
-                    
                     // Logic: Line goes FROM Source TO Current Node.
                     // We clip the endpoint so the arrow sits on the box edge.
                     const end = calculateIntersection(source, node);
@@ -216,10 +235,10 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                         onPointerLeave={() => setHighlightedId(null)}
                         
                         onClick={(e) => {
-                            e.stopPropagation(); // Tactile Logic: Only navigate if the hold was shorter than 200ms
+                            e.stopPropagation();
                             const pressDuration = Date.now() - clickStartRef.current;
                             if (pressDuration < 200) {
-                                onSelectNote(node.id); // Triggers update in App.js but stays in MapView
+                                onSelectNote(node.id);
                             }
                         }}
                         className={`
