@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import { runPhysicsTick, getDimensions } from '../../utils/physicsEngine';
 
@@ -131,6 +131,21 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
     if (pointersRef.current.size < 2) prevPinchDistRef.current = null;
   };
 
+  // --- 4. HIGHLIGHT LOGIC ---
+  // Create a Set of IDs that should be lit up (The Held Node + Its Neighbors)
+  const highlightedSet = useMemo(() => {
+    if (!highlightedId) return new Set();
+    const node = nodes.find(n => n.id === highlightedId);
+    if (!node) return new Set([highlightedId]);
+    
+    // Since links are bidirectional in the data, we just grab this node's links
+    return new Set([
+        highlightedId,
+        ...node.links.anterior,
+        ...node.links.posterior
+    ]);
+  }, [highlightedId, nodes]);
+
   return (
     <div 
       className="fixed inset-0 z-50 bg-[#fafafa] touch-none select-none overflow-hidden"
@@ -154,8 +169,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
           <Minus size={20} />
         </button>
       </div>
-      
-      {/* TRANSFORM CONTAINER (MOVES EVERYTHING) */}
+
       <div 
         className="absolute top-0 left-0 w-full h-full origin-top-left will-change-transform"
         style={{ 
@@ -175,15 +189,18 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
             node.links.anterior.map(sourceId => {
               const source = nodes.find(n => n.id === sourceId);
               if (!source) return null;
-              // Only render if NOT highlighted (Highlighted ones are drawn in Layer 20)
+              
               const isHighlighted = highlightedId && (node.id === highlightedId || source.id === highlightedId);
               if (isHighlighted) return null; 
 
-              const end = calculateIntersection(source, node);
+              // Calculate intersection for BOTH ends to ensure line starts/stops at card edges
+              const start = calculateIntersection(node, source); // Point on Source
+              const end = calculateIntersection(source, node);   // Point on Target
+
               return (
                 <line 
                   key={`bg-${source.id}-${node.id}`}
-                  x1={source.x} y1={source.y}
+                  x1={start.x} y1={start.y}
                   x2={end.x} y2={end.y}
                   stroke="#e5e5e5" 
                   strokeWidth="2" 
@@ -196,36 +213,38 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
 
         {/* LAYER 10: NOTE CARDS (Middle - z-10) */}
         <div className="absolute inset-0 pointer-events-none z-10">
-          {nodes.map(node => (
-             <div 
-               key={node.id}
-               className={`
-                 absolute pointer-events-auto flex flex-col p-4 bg-white border transition-shadow duration-300
-                 ${node.id === activeNoteId ? 'border-black shadow-lg z-20' : 'border-gray-300 shadow-sm z-10'}
-                 ${node.id === highlightedId ? 'ring-2 ring-black z-30' : ''} 
-               `}
-               style={{
-                 left: node.x,
-                 top: node.y,
-                 width: node.width,
-                 height: node.height,
-                 transform: 'translate(-50%, -50%)'
-               }}
-               onPointerDown={(e) => {
-                   e.stopPropagation();
-                   setHighlightedId(node.id);
-                   clickStartRef.current = Date.now();
-               }}
-               onPointerUp={(e) => {
-                   e.stopPropagation();
-                   setHighlightedId(null);
-               }}
-               onClick={(e) => {
-                   e.stopPropagation();
-                   const pressDuration = Date.now() - clickStartRef.current;
-                   if (pressDuration < 200) {
-                       onSelectNote(node.id);
-                   }
+          {nodes.map(node => {
+             const isLit = highlightedSet.has(node.id);
+             return (
+               <div 
+                 key={node.id}
+                 className={`
+                   absolute pointer-events-auto flex flex-col p-4 bg-white border transition-shadow duration-300
+                   ${node.id === activeNoteId ? 'border-black shadow-lg z-20' : 'border-gray-300 shadow-sm z-10'}
+                   ${isLit ? 'ring-2 ring-black z-30' : ''} 
+                 `}
+                 style={{
+                   left: node.x,
+                   top: node.y,
+                   width: node.width,
+                   height: node.height,
+                   transform: 'translate(-50%, -50%)'
+                 }}
+                 onPointerDown={(e) => {
+                     e.stopPropagation();
+                     setHighlightedId(node.id);
+                     clickStartRef.current = Date.now();
+                 }}
+                 onPointerUp={(e) => {
+                     e.stopPropagation();
+                     setHighlightedId(null);
+                 }}
+                 onClick={(e) => {
+                     e.stopPropagation();
+                     const pressDuration = Date.now() - clickStartRef.current;
+                     if (pressDuration < 200) {
+                         onSelectNote(node.id);
+                     }
                }}
              >
                 {node.tags.length > 0 && (
@@ -239,11 +258,11 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                     {node.content}
                 </p>
              </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* LAYER 20: ACTIVE LINES (Foreground - z-20) */}
-        {/* Renders ON TOP of the notes when valid */}
         <svg className="absolute inset-0 overflow-visible pointer-events-none z-20">
           <defs>
             <marker id="arrow-active" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
@@ -256,15 +275,17 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
               const source = nodes.find(n => n.id === sourceId);
               if (!source) return null;
 
-              // Only render if highlighted
               const isHighlighted = highlightedId && (node.id === highlightedId || source.id === highlightedId);
               if (!isHighlighted) return null;
 
-              const end = calculateIntersection(source, node);
+              // Edge-to-Edge calculation for highlighted lines too
+              const start = calculateIntersection(node, source); 
+              const end = calculateIntersection(source, node);   
+
               return (
                 <line 
                   key={`fg-${source.id}-${node.id}`}
-                  x1={source.x} y1={source.y}
+                  x1={start.x} y1={start.y}
                   x2={end.x} y2={end.y}
                   stroke="#000000" 
                   strokeWidth="2" 
