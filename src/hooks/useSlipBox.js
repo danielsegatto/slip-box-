@@ -1,15 +1,9 @@
-import { useState, useEffect } from 'react';
 import { extractTags } from '../utils/textProcessor';
+import useLocalStorage from './useLocalStorage'; // Import the new hook
 
 const useSlipBox = () => {
-  const [notes, setNotes] = useState(() => {
-    const saved = localStorage.getItem('slip-box-notes');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('slip-box-notes', JSON.stringify(notes));
-  }, [notes]);
+  // REPLACED: Manual useEffect/useState with custom hook
+  const [notes, setNotes] = useLocalStorage('slip-box-notes', []);
 
   const addNote = (content = '') => {
     const newNote = {
@@ -20,7 +14,7 @@ const useSlipBox = () => {
       links: { anterior: [], posterior: [] }
     };
     setNotes(prev => [newNote, ...prev]);
-    return newNote; // CHANGED: Return the note so we can use its ID immediately
+    return newNote; 
   };
 
   const updateNote = (id, newContent) => {
