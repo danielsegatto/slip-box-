@@ -4,10 +4,11 @@
   "private": true,
   "homepage": "https://danielsegatto.github.io/slip-box",
   "dependencies": {
+    "firebase": "^12.8.0",
+    "lucide-react": "^0.284.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "5.0.1",
-    "lucide-react": "^0.284.0"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
