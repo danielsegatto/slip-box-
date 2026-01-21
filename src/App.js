@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import useSlipBox from './hooks/useSlipBox';
-import ImpulseCapture from './components/ImpulseCapture';
-import SearchBar from './components/SearchBar';
-import NoteList from './components/NoteList';
+import GlobalIndexView from './components/views/GlobalIndexView';
 import FocusView from './components/views/FocusView';
 import MapView from './components/views/MapView';
 
@@ -37,35 +35,26 @@ const App = () => {
         <MapView 
             notes={notes} 
             activeNoteId={activeNoteId}
-            // CHANGED: Only update the ID, do not change the View.
-            // This allows the user to traverse the graph node-by-node.
-            // To "land" on the note, the user simply closes the map.
             onSelectNote={(id) => setActiveNoteId(id)}
             onClose={() => setView('focus')}
         />
       )}
 
-      {/* INDEX VIEW (Search & List) */}
+      {/* INDEX VIEW */}
       {view === 'index' && (
-        <>
-          <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-          <main className="max-w-2xl mx-auto px-4">
-             <ImpulseCapture 
-                input={impulse} 
-                setInput={setImpulse} 
-                addNote={handleImpulseAdd} 
-             />
-             <NoteList 
-                notes={notes.filter(n => n.content.toLowerCase().includes(searchQuery.toLowerCase()))} 
-                onSelect={(id) => { setActiveNoteId(id); setView('focus'); }}
-                deleteNote={deleteNote}
-                onTagClick={setSearchQuery}
-             />
-          </main>
-        </>
+        <GlobalIndexView 
+            notes={notes}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            impulse={impulse}
+            setImpulse={setImpulse}
+            onAddImpulse={handleImpulseAdd}
+            onSelectNote={(id) => { setActiveNoteId(id); setView('focus'); }}
+            deleteNote={deleteNote}
+        />
       )}
 
-      {/* FOCUS VIEW (Deep Work & Linking) */}
+      {/* FOCUS VIEW */}
       {view === 'focus' && activeNote && (
         <FocusView 
           selectedNote={activeNote}
