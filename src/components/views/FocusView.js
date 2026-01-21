@@ -5,7 +5,7 @@ import LinkSelector from '../LinkSelector';
 
 const FocusView = ({ 
   selectedNote, allNotes, getLinkedNotes, onBack, onSelectNote, 
-  onUpdateNote, onAddLink, onRemoveLink, onOpenMap, onAddNote // NEW PROP
+  onUpdateNote, onAddLink, onRemoveLink, onOpenMap, onAddNote 
 }) => {
   const [linkingType, setLinkingType] = useState(null); 
   const textareaRef = useRef(null);
@@ -42,11 +42,10 @@ const FocusView = ({
     setLinkingType(null);
   };
 
-  // NEW: Handle creating a fresh note and linking it immediately
   const handleCreateAndLink = (content) => {
-      const newNote = onAddNote(content); // Create note
-      onAddLink(selectedNote.id, newNote.id, linkingType); // Link it
-      setLinkingType(null); // Close selector
+      const newNote = onAddNote(content); 
+      onAddLink(selectedNote.id, newNote.id, linkingType); 
+      setLinkingType(null); 
   };
 
   if (!selectedNote) return null;
@@ -58,7 +57,7 @@ const FocusView = ({
           notes={linkableNotes} 
           onClose={() => setLinkingType(null)} 
           onSelect={handleLinkSelection}
-          onCreate={handleCreateAndLink} // Pass the handler
+          onCreate={handleCreateAndLink} 
         />
       )}
 
@@ -132,7 +131,8 @@ const STYLES = {
   navButton: "p-3 -ml-3 rounded-full active:bg-gray-100 transition-colors",
   threadContainer: "flex flex-col gap-6 relative flex-1",
   connectionGroup: "flex flex-col gap-2",
-  addButton: "p-2 text-gray-300 hover:text-black self-start transition-colors",
+  // CHANGED: self-start -> self-center (Centers the + button)
+  addButton: "p-2 text-gray-300 hover:text-black self-center transition-colors",
   activeNoteContainer: "py-2 border-y border-gray-100",
   textarea: "w-full text-2xl leading-relaxed text-[#1a1a1a] font-light resize-none bg-white outline-none overflow-hidden p-2"
 };
