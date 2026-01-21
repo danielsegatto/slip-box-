@@ -14,6 +14,8 @@ Minimalism as Mental Space: Minimalism is not an aesthetic choice; it is a funct
 
 The app must act as a lightning rod for fleeting thoughts. The interface should feel like it is "waiting" for the user's input. The transition from "not writing" to "writing" should be so seamless that the tool itself becomes invisible.
 
+Capture is context-agnostic. Whether starting from zero or deep within a narrative thread, the user can manifest a new atom the moment the connection is realized. Creation and Connection are not separate modes; a new thought can be born directly as a link to an existing one.
+
 ### 2. The Sequence of Ideas (Anterior & Posterior)
 
 Ideas are not isolated events; they are nodes in a logical flow. The direction of the connection defines the sequence, not the time of creation.
@@ -49,6 +51,8 @@ When an individual note is selected, the app shifts from "browsing" to "deep foc
 
 The View is the Editor. There is no distinction between 'reading mode' and 'editing mode.' To refine a thought, the user simply touches the text and types. This encourages the constant polishing of atoms, keeping the slip-box as a living organism rather than a static archive.
 
+The text container itself breathes with the content. It expands and contracts automatically, removing scrollbars within the note itself to maintain the illusion that the text is printed directly on the glass.
+
 The Interface: The current note occupies the center of the viewport.
 
 Above (The Source): A vertical stack of "Anterior" notes, showing the logical foundations that lead to the current thought.
@@ -67,6 +71,8 @@ Visual Hierarchy: The current note is the anchor. Its immediate connections are 
 
 The Map is Navigable. Selecting a node within the map shifts the gravitational anchor to that new thought without exiting the spatial view. The user can traverse the entire neural network node-by-node, effectively 'swinging' through their thoughts, and only return to the linear Focus View when they choose to land.
 
+To maintain clarity during traversal, shifting the gravitational anchor automatically resets the visualization depth to its simplest state (Level 1). The user expands outward from the new thought, ensuring the map remains a tool for focus, not just a static overview.
+
 The Experience: This is for macro-thinking and pattern recognition. It allows the user to see "islands" of thoughts that might be linked by a common tag but haven't been connected by a linear link yet. It is the visual representation of the "Secondary Brain."
 
 
@@ -78,7 +84,7 @@ Structural Invisibility (Text-less UI): The interface intentionally avoids text 
 
 Tactile Thought: Moving from an anterior note to a posterior one should feel like flipping through physical cards in a wooden box.
 
-The Honesty of Touch (Mobile-First Reality) Hover states are a desktop illusion; they do not exist in the hand. Visual transitions (fades, slides, glides) are cosmetic delays that mask the raw function of the tool. In a mobile-first context, interaction is binary: you touch, it acts. The interface must be immediate and solid. It should snap, not drift. The app rejects the "smoothness" of modern web design in favor of the instant responsiveness of a physical tool.
+The Honesty of Touch (Mobile-First Reality) Hover states are a desktop illusion; they do not exist in the hand. Visual transitions (fades, slides, glides) are cosmetic delays that mask the raw function of the tool. In a mobile-first context, interaction is intentional: distinct gestures yield distinct results. A quick tap signifies navigation (action), while a sustained hold signifies inspection (highlighting). The interface distinguishes between the impulse to move and the impulse to observe. The interface must be immediate and solid. It should snap, not drift. The app rejects the "smoothness" of modern web design in favor of the instant responsiveness of a physical tool.
 
 Reject 'Drift,' Embrace 'Feedback.' While navigation transitions (fades, slides) are banned for slowing down cognition, micro-interactions are essential. Buttons should depress physically (scale down) when touched to confirm the action. The interface must provide tactile certainty without navigational lag.
 
