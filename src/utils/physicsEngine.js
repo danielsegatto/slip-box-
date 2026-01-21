@@ -13,17 +13,17 @@ export const getDimensions = (text) => {
   // CHANGED: Wider base widths to accommodate larger text on mobile
   let w = 220;
   if (text.length > 50) w = 260;
-  if (text.length > 150) w = 320;
+  if (text.length > 150) w = 340;
   
-  // CHANGED: Improved height estimation
-  // 16px font averages ~9px width per character. 
-  // We use a safe divisor to slightly overestimate height (preventing scroll/cutoff).
-  const charsPerLine = w / 9;
+  // CHANGED: More conservative character width estimate (18px font is wide)
+  // using 10px divisor results in fewer chars per line -> more lines -> taller box.
+  const charsPerLine = w / 10; 
   const lines = Math.ceil(text.length / charsPerLine);
   
   // Height = (Lines * LineHeight) + Vertical Padding + Space for Tags
-  // LineHeight is 1.6 (matches leading-relaxed)
-  const h = Math.max(120, (lines * FONT_SIZE * 1.6) + 60);
+  // Base height bumped from 120 -> 140
+  // Line multiplier 32 (approx 1.6 * 18px rounded up)
+  const h = Math.max(140, (lines * 26));
   
   return { width: w, height: h };
 };

@@ -219,7 +219,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                <div 
                  key={node.id}
                  className={`
-                   absolute pointer-events-auto flex flex-col p-4 bg-white border transition-shadow duration-300
+                   absolute pointer-events-auto flex flex-col p-2 bg-white border transition-shadow duration-300 overflow-hidden overflow-hidden
                    ${node.id === activeNoteId ? 'border-black shadow-lg z-20' : 'border-gray-300 shadow-sm z-10'}
                    ${isLit ? 'ring-2 ring-black z-30' : ''} 
                  `}
