@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { runPhysicsTick, getDimensions } from '../../utils/physicsEngine';
-import MapControls from '../map/MapControls'; // Changed path
+import MapControls from '../map/MapControls';
 
 // --- CONSTANTS ---
 const MAX_VIEW_DEPTH = 5; 
@@ -247,7 +247,11 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                  }}
                  onClick={(e) => {
                      e.stopPropagation();
-                     onSelectNote(node.id);
+                     // CHANGED: Only navigate if the press was short (click), ignoring long presses (holds)
+                     const pressDuration = Date.now() - clickStartRef.current;
+                     if (pressDuration < 200) {
+                         onSelectNote(node.id);
+                     }
                }}
              >
                 {node.tags.length > 0 && (
