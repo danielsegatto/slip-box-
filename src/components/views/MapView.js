@@ -244,15 +244,13 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                  onPointerUp={(e) => {
                      e.stopPropagation();
                      setHighlightedId(null);
-                 }}
-                 onClick={(e) => {
-                     e.stopPropagation();
-                     // CHANGED: Only navigate if the press was short (click), ignoring long presses (holds)
+                     // FIX: Moved logic from onClick to here to guarantee timing accuracy
                      const pressDuration = Date.now() - clickStartRef.current;
                      if (pressDuration < 200) {
                          onSelectNote(node.id);
                      }
-               }}
+                 }}
+                 // Removed onClick entirely to avoid conflicts
              >
                 {node.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
