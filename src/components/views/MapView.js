@@ -1,24 +1,20 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { X, Plus, Minus } from 'lucide-react';
 import { runPhysicsTick, getDimensions } from '../../utils/physicsEngine';
+import MapControls from '../MapControls'; // Import the new component
 
 // --- CONSTANTS ---
-const MAX_VIEW_DEPTH = 5; // Hard limit for performance
+const MAX_VIEW_DEPTH = 5; 
 
-// --- GEOMETRY HELPER: CLIP LINE TO RECTANGLE ---
+// --- GEOMETRY HELPER ---
 const calculateIntersection = (source, target) => {
     const w = (target.width / 2) + 5; 
     const h = (target.height / 2) + 5;
-
     const dx = source.x - target.x;
     const dy = source.y - target.y;
-
     if (dx === 0 && dy === 0) return { x: target.x, y: target.y };
-
     const scaleX = w / Math.abs(dx);
     const scaleY = h / Math.abs(dy);
     const scale = Math.min(scaleX, scaleY);
-
     return {
         x: target.x + (dx * scale),
         y: target.y + (dy * scale)
@@ -39,16 +35,13 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   const prevPinchDistRef = useRef(null);
 
   // --- 1. RESET DEPTH ON NAVIGATION ---
-  // When the user focuses a new card, reset the zoom level to 1 (lowest point)
   useEffect(() => {
     setViewDepth(1);
   }, [activeNoteId]);
 
-  // --- 2. CALCULATE MAX AVAILABLE DEPTH (Smart Limit) ---
+  // --- 2. CALCULATE MAX AVAILABLE DEPTH ---
   const maxAvailableDepth = useMemo(() => {
     if (!activeNoteId) return 1;
-    
-    // Start at 0. 'd' represents the number of SUCCESSFUL expansions.
     let d = 0;
     let currentLayer = [activeNoteId];
     const visited = new Set([activeNoteId]);
@@ -58,7 +51,6 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
         for (const id of currentLayer) {
             const note = notes.find(n => n.id === id);
             if (!note) continue;
-            
             const links = [...note.links.anterior, ...note.links.posterior];
             for (const linkId of links) {
                 if (!visited.has(linkId)) {
@@ -67,9 +59,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                 }
             }
         }
-        
         if (nextLayer.length === 0) break;
-        
         currentLayer = nextLayer;
         d++;
     }
@@ -83,7 +73,6 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
 
     const visited = new Set([anchorId]);
     let currentLayer = [activeNoteId];
-    // Clamp the actual depth to what is mathematically possible
     const actualDepth = Math.min(viewDepth, maxAvailableDepth);
 
     for (let d = 0; d < actualDepth; d++) {
@@ -186,29 +175,14 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
       onPointerCancel={handlePointerUp}
     >
       
-      {/* UI Controls */}
-      <div className="absolute top-4 right-4 flex flex-col gap-2 z-50 pointer-events-auto">
-        <button onClick={onClose} className="p-2 bg-white border border-gray-200 shadow-sm rounded-full text-gray-500 hover:text-black">
-          <X size={20} />
-        </button>
-        <div className="h-4"></div>
-        
-        <button 
-            onClick={() => setViewDepth(d => Math.min(maxAvailableDepth, d + 1))}
-            disabled={!canIncreaseDepth}
-            className={`p-2 bg-white border border-gray-200 shadow-sm rounded-full text-gray-500 transition-colors ${!canIncreaseDepth ? 'opacity-50 cursor-not-allowed' : 'hover:text-black'}`}
-        >
-          <Plus size={20} />
-        </button>
-        
-        <button 
-            onClick={() => setViewDepth(d => Math.max(1, d - 1))} 
-            disabled={viewDepth <= 1}
-            className={`p-2 bg-white border border-gray-200 shadow-sm rounded-full text-gray-500 transition-colors ${viewDepth <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:text-black'}`}
-        >
-          <Minus size={20} />
-        </button>
-      </div>
+      {/* EXTRACTED UI CONTROLS */}
+      <MapControls 
+        onClose={onClose}
+        onIncreaseDepth={() => setViewDepth(d => Math.min(maxAvailableDepth, d + 1))}
+        onDecreaseDepth={() => setViewDepth(d => Math.max(1, d - 1))}
+        canIncrease={canIncreaseDepth}
+        canDecrease={viewDepth > 1}
+      />
 
       <div 
         className="absolute top-0 left-0 w-full h-full origin-top-left will-change-transform"
