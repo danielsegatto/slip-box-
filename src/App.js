@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth'; // NEW
-import { auth } from './utils/firebase'; // NEW
+import { onAuthStateChanged } from 'firebase/auth'; 
+import { auth } from './utils/firebase'; 
 import useSlipBox from './hooks/useSlipBox';
 import GlobalIndexView from './components/views/GlobalIndexView';
 import FocusView from './components/views/FocusView';
 import MapView from './components/views/MapView';
-import LoginView from './components/views/LoginView'; // NEW
+import LoginView from './components/views/LoginView'; 
 
 const App = () => {
-  // --- AUTH STATE ---
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // This listener automatically handles session persistence
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -21,7 +19,6 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  // --- DATA HOOK (Passes the UID) ---
   const { notes, addNote, updateNote, deleteNote, addLink, removeLink } = useSlipBox(user?.uid);
   
   const [view, setView] = useState('index'); 
@@ -43,12 +40,16 @@ const App = () => {
 
   const activeNote = notes.find(n => n.id === activeNoteId);
 
-  // --- RENDER GATES ---
-  if (loading) return <div className="min-h-screen bg-[#fafafa]" />; // Or a spinner
+  if (loading) return <div className="min-h-screen bg-[#fafafa]" />; 
   if (!user) return <LoginView />;
 
+  // DYNAMIC CLASS: 'overflow-hidden' for Map, 'overflow-auto' for others
+  const containerClass = view === 'map' 
+    ? "h-screen w-screen overflow-hidden bg-[#fafafa] font-sans text-[#1a1a1a]" 
+    : "min-h-screen bg-[#fafafa] font-sans text-[#1a1a1a] overflow-auto";
+
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans text-[#1a1a1a]">
+    <div className={containerClass}>
       
       {view === 'map' && (
         <MapView 
