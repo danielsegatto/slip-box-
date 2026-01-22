@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/slip-box/static/js/main.bcdeff03.js",
+    "main.js": "/slip-box/static/js/main.ab6c7eed.js",
     "index.html": "/slip-box/index.html",
-    "main.bcdeff03.js.map": "/slip-box/static/js/main.bcdeff03.js.map"
+    "main.ab6c7eed.js.map": "/slip-box/static/js/main.ab6c7eed.js.map"
   },
   "entrypoints": [
-    "static/js/main.bcdeff03.js"
+    "static/js/main.ab6c7eed.js"
   ]
 }
