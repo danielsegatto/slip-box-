@@ -32,6 +32,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
   const pointersRef = useRef(new Map());
   const requestRef = useRef();
   const clickStartRef = useRef(0);
+  const prevPinchDistRef = useRef(null); // TRACK PREVIOUS DISTANCE
 
   // --- 1. RESET DEPTH ON NAVIGATION ---
   useEffect(() => {
@@ -129,10 +130,22 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     if (pointersRef.current.size === 2) {        
+        // --- PINCH LOGIC ---
         const points = [...pointersRef.current.values()];
-        const dist = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
-        setZoom(z => Math.min(Math.max(0.2, z * (dist / (Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) || 1))), 4));
+        // Calculate distance between the two pointers
+        const currentDist = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+
+        // If we have a previous distance, calculate the scale difference
+        if (prevPinchDistRef.current) {
+            const scale = currentDist / prevPinchDistRef.current;
+            setZoom(z => Math.min(Math.max(0.2, z * scale), 4));
+        }
+
+        // Store current distance for the next frame
+        prevPinchDistRef.current = currentDist;
     } else if (pointersRef.current.size === 1) {
+        // --- PAN LOGIC ---
+        prevPinchDistRef.current = null; // Reset pinch if one finger lifts
         setPan(p => ({
             x: p.x + (e.clientX - prev.x),
             y: p.y + (e.clientY - prev.y)
@@ -142,6 +155,10 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
 
   const handlePointerUp = (e) => {
     pointersRef.current.delete(e.pointerId);
+    // Reset pinch tracking if we drop below 2 fingers
+    if (pointersRef.current.size < 2) {
+        prevPinchDistRef.current = null;
+    }
   };
 
   // --- 6. HIGHLIGHT LOGIC ---
@@ -166,6 +183,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onPointerLeave={handlePointerUp} // Safety: clear pointer if it leaves window
     >
       
       {/* EXTRACTED UI CONTROLS */}
@@ -183,6 +201,7 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
           transform: `translate(${pan.x + dimensions.width/2}px, ${pan.y + dimensions.height/2}px) scale(${zoom})` 
         }}
       >
+        {/* ... SVG LAYERS (Unchanged) ... */}
         
         {/* LAYER 0: PASSIVE LINES (Background - z-0) */}
         <svg className="absolute inset-0 overflow-visible pointer-events-none z-0">
@@ -191,18 +210,14 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
               <path d="M0,0 L0,6 L9,3 z" fill="#e5e5e5" />
             </marker>
           </defs>
-          
           {nodes.map(node => (
             node.links.anterior.map(sourceId => {
               const source = nodes.find(n => n.id === sourceId);
               if (!source) return null;
-              
               const isHighlighted = highlightedId && (node.id === highlightedId || source.id === highlightedId);
               if (isHighlighted) return null; 
-
               const start = calculateIntersection(node, source);
               const end = calculateIntersection(source, node);
-
               return (
                 <line 
                   key={`bg-${source.id}-${node.id}`}
@@ -244,13 +259,11 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
                  onPointerUp={(e) => {
                      e.stopPropagation();
                      setHighlightedId(null);
-                     // FIX: Moved logic from onClick to here to guarantee timing accuracy
                      const pressDuration = Date.now() - clickStartRef.current;
                      if (pressDuration < 200) {
                          onSelectNote(node.id);
                      }
                  }}
-                 // Removed onClick entirely to avoid conflicts
              >
                 {node.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
@@ -274,18 +287,14 @@ const MapView = ({ notes, onSelectNote, onClose, activeNoteId }) => {
               <path d="M0,0 L0,6 L9,3 z" fill="#000000" />
             </marker>
           </defs>
-          
           {nodes.map(node => (
             node.links.anterior.map(sourceId => {
               const source = nodes.find(n => n.id === sourceId);
               if (!source) return null;
-
               const isHighlighted = highlightedId && (node.id === highlightedId || source.id === highlightedId);
               if (!isHighlighted) return null;
-
               const start = calculateIntersection(node, source); 
               const end = calculateIntersection(source, node);   
-
               return (
                 <line 
                   key={`fg-${source.id}-${node.id}`}
