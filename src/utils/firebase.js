@@ -1,18 +1,18 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider } from "firebase/auth"; // NEW IMPORTS
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBwDTYZj0KXoHD1zCtWMfV4zCplUS89ZH8",
-  authDomain: "slip-box-8baff.firebaseapp.com",
-  projectId: "slip-box-8baff",
-  storageBucket: "slip-box-8baff.firebasestorage.app",
-  messagingSenderId: "931751504867",
-  appId: "1:931751504867:web:2e0242125b3fb3ce378ed6",
-  measurementId: "G-NEHZF37HCD"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
-export const auth = getAuth(app); // NEW
-export const provider = new GoogleAuthProvider(); // NEW
+export const auth = getAuth(app);
+export const provider = new GoogleAuthProvider();
